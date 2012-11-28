@@ -11,7 +11,7 @@
 @protocol TWHorizontalTableViewDatasource <NSObject>
 
 @required
--(UITableViewCell*)hsList:(UITableView *)tableView cellForRowAtIndex:(NSInteger)index;
+-(UITableViewCell*)hTableView:(UITableView *)tableView cellForRowAtIndex:(NSInteger)index;
 -(NSInteger)numberOfRows:(UITableView *)tableView;
 
 @end

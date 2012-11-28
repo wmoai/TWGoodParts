@@ -42,8 +42,8 @@
     return [datasource numberOfRows:tableView];
 }
 -(UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell = [datasource hsList:tableView 
-                             cellForRowAtIndex: [datasource numberOfRows:tableView] - 1 - [indexPath indexAtPosition:1]];
+    UITableViewCell *cell = [datasource hTableView: tableView
+                                 cellForRowAtIndex: [datasource numberOfRows:tableView] - 1 - [indexPath indexAtPosition:1]];
     cell.contentView.transform = CGAffineTransformMakeRotation(M_PI * -90 / 180.0f);
     CGRect frame = cell.contentView.frame;
     frame.origin.x = cell.contentView.frame.origin.x;
