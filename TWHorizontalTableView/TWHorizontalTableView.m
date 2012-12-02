@@ -1,9 +1,5 @@
 //
 //  TWHorizontalTableView.m
-//  horizonscroll
-//
-//  Created by wmoai on 12/11/28.
-//  Copyright (c) 2012. All rights reserved.
 //
 
 #import "TWHorizontalTableView.h"
@@ -14,28 +10,28 @@
 
 - (id)initWithFrame:(CGRect)frame
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectMake(0, 0, frame.size.height, frame.size.width)];
     if (self) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, frame.size.height, frame.size.width)];
-        [self addSubview:_tableView];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.rowHeight = frame.size.width;
-        _tableView.allowsSelection = NO;
+        self.transform = CGAffineTransformMakeRotation(M_PI * 90 / 180.0f);
+        CGRect pre = self.frame;
+        pre.origin.x = frame.origin.x;
+        pre.origin.y = frame.origin.y;
+        self.frame = pre;
         
-        _tableView.center = self.center;
-        _tableView.transform = CGAffineTransformMakeRotation(M_PI * 90 / 180.0f);
-        _tableView.pagingEnabled = YES;
+        self.pagingEnabled = YES;
+        self.dataSource = self;
+        self.rowHeight = frame.size.width;
+        self.allowsSelection = NO;
         
-        return self;
+        [self setContentOffset:CGPointMake(CGFLOAT_MAX, CGFLOAT_MAX)];
     }
     return self;
 }
 
 -(void) render {
-    [_tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]
-                  atScrollPosition:UITableViewScrollPositionBottom
-                          animated:NO];
+    [self scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]
+                atScrollPosition:UITableViewScrollPositionBottom
+                        animated:NO];
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
