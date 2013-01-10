@@ -1,11 +1,11 @@
 //
-//  UIButton+TWSupport.h
+//  TWButton.h
 //
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 
-@interface UIButton (TWSupport)
+@interface TWButton : UIButton
 
 + (id)buttonWithGradient:(CGRect)frame;
 + (id)buttonWithGradient:(CGRect)frame topColor:(UIColor *)topColor bottomColor:(UIColor *)bottomColor;

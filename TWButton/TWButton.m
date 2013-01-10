@@ -1,14 +1,14 @@
 //
-//  UIButton+TWSupport.m
+//  TWButton.m
 //
 
-#import "UIButton+TWSupport.h"
+#import "TWButton.h"
 
-@implementation UIButton (TWSupport)
+@implementation TWButton
 
 + (id)buttonWithGradient:(CGRect)frame
 {
-    UIButton *button = [self buttonWithCornerRadius:frame];
+    TWButton *button = [self buttonWithCornerRadius:frame];
     [button setBorder];
     [button setGradient];
     return button;
@@ -16,7 +16,7 @@
 
 + (id)buttonWithGradient:(CGRect)frame topColor:(UIColor *)topColor bottomColor:(UIColor *)bottomColor
 {
-    UIButton *button = [self buttonWithCornerRadius:frame];
+    TWButton *button = [self buttonWithCornerRadius:frame];
     [button setBorder];
     [button setGradient:topColor bottomColor:bottomColor];
     return button;
@@ -24,15 +24,20 @@
 
 + (id)buttonWithCornerRadius:(CGRect)frame
 {
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
+    TWButton *button = [self buttonWithType:UIButtonTypeCustom];
     [button setTypeWithCornerRadius:frame];
-    
+
     return button;
 }
 
 + (NSString *)highlightLayerName
 {
     return @"highlight";
+}
+
++ (NSString *)gradientLayerName
+{
+    return @"gradient";
 }
 
 - (void)setTypeWithCornerRadius:(CGRect)frame
@@ -89,8 +94,26 @@
 
 - (void)setGradient:(UIColor *)topColor bottomColor:(UIColor *)bottomColor
 {
-    CAGradientLayer *gradientLayer = [CAGradientLayer layer];
-    gradientLayer.frame = self.layer.bounds;
+    CAGradientLayer *gradientLayer;
+    NSString *gradientLayerName = [[self class] gradientLayerName];
+
+    for (CALayer *layer in self.layer.sublayers) {
+        if ([layer.name isEqualToString:gradientLayerName]) {
+            gradientLayer = (CAGradientLayer *)layer;
+            break;
+        }
+    }
+
+    if (!gradientLayer) {
+        gradientLayer = [CAGradientLayer layer];
+        gradientLayer.name = [[self class] gradientLayerName];
+        gradientLayer.frame = self.layer.bounds;
+        if (self.layer.cornerRadius) {
+            gradientLayer.cornerRadius = self.layer.cornerRadius;
+        }
+        [self.layer insertSublayer:gradientLayer atIndex:0];
+    }
+
     gradientLayer.colors = [NSArray arrayWithObjects:
                             (id)topColor.CGColor,
                             (id)bottomColor.CGColor,
@@ -99,12 +122,6 @@
                                [NSNumber numberWithFloat:0.0f],
                                [NSNumber numberWithFloat:1.0f],
                                nil];
-
-    if (self.layer.cornerRadius) {
-        gradientLayer.cornerRadius = self.layer.cornerRadius;
-    }
-
-    [self.layer insertSublayer:gradientLayer atIndex:0];
 }
 
 - (CALayer *)highlightLayer
