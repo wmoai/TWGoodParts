@@ -25,7 +25,16 @@
 + (id)buttonWithCornerRadius:(CGRect)frame
 {
     TWButton *button = [self buttonWithType:UIButtonTypeCustom];
-    [button setTypeWithCornerRadius:frame];
+    [button setOptionsWithCornerRadius:frame];
+
+    return button;
+}
+
++ (id)buttonWithColor:(CGRect)frame color:(UIColor *)color
+{
+    TWButton *button = [self buttonWithType:UIButtonTypeCustom];
+    button.backgroundColor = color;
+    [button setDefaultOptions:frame];
 
     return button;
 }
@@ -40,7 +49,13 @@
     return @"gradient";
 }
 
-- (void)setTypeWithCornerRadius:(CGRect)frame
+- (void)setOptionsWithCornerRadius:(CGRect)frame
+{
+    [self setDefaultOptions:frame];
+    [self setCornerRadius];
+}
+
+- (void)setDefaultOptions:(CGRect)frame
 {
     self.frame = frame;
     if (![self highlightLayer]) {
@@ -53,8 +68,6 @@
         highlightLayer.name = [[self class] highlightLayerName];
         [self.layer addSublayer:highlightLayer];
     }
-
-    [self setCornerRadius];
     [self setHighlightColorBlack];
 }
 
