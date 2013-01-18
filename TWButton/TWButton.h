@@ -11,6 +11,7 @@
 + (id)buttonWithGradient:(CGRect)frame topColor:(UIColor *)topColor bottomColor:(UIColor *)bottomColor;
 + (id)buttonWithCornerRadius:(CGRect)frame;
 + (id)buttonWithColor:(CGRect)frame color:(UIColor *)color;
+- (void)setFrame:(CGRect)frame;
 - (void)setGradient;
 - (void)setGradient:(UIColor *)topColor bottomColor:(UIColor *)bottomColor;
 - (void)setBorder;

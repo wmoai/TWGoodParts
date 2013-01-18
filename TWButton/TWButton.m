@@ -5,6 +5,10 @@
 #import "TWButton.h"
 
 @implementation TWButton
+{
+    CAGradientLayer *_gradientLayer;
+    CALayer *_highlightLayer;
+}
 
 + (id)buttonWithGradient:(CGRect)frame
 {
@@ -34,41 +38,32 @@
 {
     TWButton *button = [self buttonWithType:UIButtonTypeCustom];
     button.backgroundColor = color;
-    [button setDefaultOptions:frame];
+    [button setOptionsWithCornerRadius:frame];
 
     return button;
 }
 
-+ (NSString *)highlightLayerName
-{
-    return @"highlight";
-}
-
-+ (NSString *)gradientLayerName
-{
-    return @"gradient";
-}
-
 - (void)setOptionsWithCornerRadius:(CGRect)frame
 {
-    [self setDefaultOptions:frame];
+    self.frame = frame;
+    if (!_highlightLayer) {
+        _highlightLayer = [CALayer layer];
+        _highlightLayer.frame = self.layer.bounds;
+        _highlightLayer.backgroundColor = [[UIColor clearColor] CGColor];
+        _highlightLayer.hidden = YES;
+        _highlightLayer.speed = 2.0;
+        _highlightLayer.zPosition = 1;
+        [self.layer addSublayer:_highlightLayer];
+    }
+    [self setHighlightColorBlack];
     [self setCornerRadius];
 }
 
-- (void)setDefaultOptions:(CGRect)frame
+- (void)setFrame:(CGRect)frame
 {
-    self.frame = frame;
-    if (![self highlightLayer]) {
-        CALayer *highlightLayer = [CALayer layer];
-        highlightLayer.frame = self.layer.bounds;
-        highlightLayer.backgroundColor = [[UIColor clearColor] CGColor];
-        highlightLayer.hidden = YES;
-        highlightLayer.speed = 2.0;
-        highlightLayer.zPosition = 1;
-        highlightLayer.name = [[self class] highlightLayerName];
-        [self.layer addSublayer:highlightLayer];
-    }
-    [self setHighlightColorBlack];
+    [super setFrame:frame];
+    _highlightLayer.frame = self.layer.bounds;
+    _gradientLayer.frame = self.layer.bounds;
 }
 
 - (void)setBorder
@@ -107,73 +102,46 @@
 
 - (void)setGradient:(UIColor *)topColor bottomColor:(UIColor *)bottomColor
 {
-    CAGradientLayer *gradientLayer;
-    NSString *gradientLayerName = [[self class] gradientLayerName];
-
-    for (CALayer *layer in self.layer.sublayers) {
-        if ([layer.name isEqualToString:gradientLayerName]) {
-            gradientLayer = (CAGradientLayer *)layer;
-            break;
-        }
-    }
-
-    if (!gradientLayer) {
-        gradientLayer = [CAGradientLayer layer];
-        gradientLayer.name = [[self class] gradientLayerName];
-        gradientLayer.frame = self.layer.bounds;
+    if (!_gradientLayer) {
+        _gradientLayer = [CAGradientLayer layer];
+        _gradientLayer.frame = self.layer.bounds;
+        _gradientLayer.zPosition = -1;
         if (self.layer.cornerRadius) {
-            gradientLayer.cornerRadius = self.layer.cornerRadius;
+            _gradientLayer.cornerRadius = self.layer.cornerRadius;
         }
-        [self.layer insertSublayer:gradientLayer atIndex:0];
+        [self.layer insertSublayer:_gradientLayer atIndex:0];
     }
 
-    gradientLayer.colors = [NSArray arrayWithObjects:
-                            (id)topColor.CGColor,
-                            (id)bottomColor.CGColor,
-                            nil];
-    gradientLayer.locations = [NSArray arrayWithObjects:
-                               [NSNumber numberWithFloat:0.0f],
-                               [NSNumber numberWithFloat:1.0f],
-                               nil];
-}
-
-- (CALayer *)highlightLayer
-{
-    CALayer *highlightLayer = nil;
-    NSString *highlightLayerName = [[self class] highlightLayerName];
-    for (CALayer *layer in self.layer.sublayers) {
-        if ([layer.name isEqualToString:highlightLayerName]) {
-            highlightLayer = layer;
-            break;
-        }
-    }
-    return  highlightLayer;
+    _gradientLayer.colors = [NSArray arrayWithObjects:
+                             (id)topColor.CGColor,
+                             (id)bottomColor.CGColor,
+                             nil];
+    _gradientLayer.locations = [NSArray arrayWithObjects:
+                                [NSNumber numberWithFloat:0.0f],
+                                [NSNumber numberWithFloat:1.0f],
+                                nil];
 }
 
 - (void)setHighlightColorWhite
 {
-    CALayer *layer = [self highlightLayer];
-    layer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.2f] CGColor];
+    _highlightLayer.backgroundColor = [[UIColor colorWithWhite:1.0f alpha:0.2f] CGColor];
 }
 
 - (void)setHighlightColorBlack
 {
-    CALayer *layer = [self highlightLayer];
-    layer.backgroundColor = [[UIColor colorWithWhite:0.0f alpha:0.2f] CGColor];
+    _highlightLayer.backgroundColor = [[UIColor colorWithWhite:0.0f alpha:0.2f] CGColor];
 }
 
 - (void)setHighlightColorNone
 {
-    CALayer *layer = [self highlightLayer];
-    layer.backgroundColor = [[UIColor clearColor] CGColor];
+    _highlightLayer.backgroundColor = [[UIColor clearColor] CGColor];
 }
 
 - (void)setHighlighted:(BOOL)highlighted
 {
     [super setHighlighted:highlighted];
 
-    CALayer *layer = [self highlightLayer];
-    layer.hidden = !highlighted;
+    _highlightLayer.hidden = !highlighted;
 }
 
 @end
