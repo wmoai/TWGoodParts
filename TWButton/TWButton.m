@@ -96,7 +96,8 @@
 - (void)setGradient
 {
     UIColor *topColor = [UIColor colorWithWhite:1.0f alpha:0.9f];
-    UIColor *bottomColor = [UIColor colorWithWhite:0.7f alpha:0.9f];
+    UIColor *bottomColor = [UIColor colorWithWhite:0.8f alpha:0.9f];
+
     [self setGradient:topColor bottomColor:bottomColor];
 }
 
