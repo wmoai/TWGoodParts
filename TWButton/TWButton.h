@@ -22,5 +22,7 @@
 - (void)setHighlightColorWhite;
 - (void)setHighlightColorBlack;
 - (void)setHighlightColorNone;
+- (void)setMaxSize:(CGSize)size;
+- (void)widthToFit;
 
 @end

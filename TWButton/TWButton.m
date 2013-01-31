@@ -8,6 +8,7 @@
 {
     CAGradientLayer *_gradientLayer;
     CALayer *_highlightLayer;
+    CGSize _maxSize;
 }
 
 + (id)buttonWithGradient:(CGRect)frame
@@ -143,6 +144,26 @@
     [super setHighlighted:highlighted];
 
     _highlightLayer.hidden = !highlighted;
+}
+
+- (void)setMaxSize:(CGSize)size
+{
+    _maxSize = size;
+}
+
+- (void)widthToFit
+{
+    CGSize constrainedToSize;
+    if (_maxSize.width == 0 && _maxSize.height == 0) {
+        constrainedToSize = self.frame.size;
+    } else {
+        constrainedToSize = _maxSize;
+    }
+
+    CGSize sizeToFit = [self.titleLabel.text sizeWithFont:self.titleLabel.font
+                                        constrainedToSize:constrainedToSize
+                                            lineBreakMode:UILineBreakModeTailTruncation];
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeToFit.width, self.frame.size.height)];
 }
 
 @end
