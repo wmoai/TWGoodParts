@@ -4,8 +4,8 @@
 
 @interface UIView (TWLinear)
 
-- (void)setHeight:(int)height;
-- (int)height;
+- (void)twViewSetHeight:(int)height;
+- (int)twViewHeight;
 
 - (void)addSubviewLinear:(UIView *)view;
 - (void)sizeToFitLinear;

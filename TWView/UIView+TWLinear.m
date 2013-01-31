@@ -5,14 +5,14 @@
 #import <objc/runtime.h>
 #import "UIView+TWLinear.h"
 
-static char *key;
+static char *kTWViewKey;
 @implementation UIView (TWLinear)
 
--(void)setHeight:(int)height {
-    objc_setAssociatedObject(self, &key, [NSNumber numberWithInt:height], OBJC_ASSOCIATION_RETAIN);
+-(void)twViewSetHeight:(int)height {
+    objc_setAssociatedObject(self, &kTWViewKey, [NSNumber numberWithInt:height], OBJC_ASSOCIATION_RETAIN);
 }
--(int)height {
-    NSNumber *num = (NSNumber*)objc_getAssociatedObject(self, &key);
+-(int)twViewHeight {
+    NSNumber *num = (NSNumber*)objc_getAssociatedObject(self, &kTWViewKey);
     if (!num) {
         return 0;
     }
@@ -20,22 +20,22 @@ static char *key;
 }
 -(void)addSubviewLinear:(UIView *)view {
     CGRect r = view.frame;
-    int height = [self height];
+    int height = [self twViewHeight];
     UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0,
                                                                height,
                                                                r.size.width,
                                                                r.size.height)];
     [addView addSubview:view];
     height += r.size.height + r.origin.y;
-    [self setHeight:height];
+    [self twViewSetHeight:height];
     [self addSubview:addView];
 }
 
 -(void)sizeToFitLinear {
-    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self height])];
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self twViewHeight])];
 }
 -(void)sizeToFitLinearWithPaddingBottom:(NSInteger)padding {
-    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self height] + padding)];
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self twViewHeight] + padding)];
 }
 
 @end
