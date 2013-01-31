@@ -19,16 +19,13 @@ static char *kTWViewKey;
     return [num intValue];
 }
 -(void)addSubviewLinear:(UIView *)view {
-    CGRect r = view.frame;
     int height = [self twViewHeight];
-    UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0,
-                                                               height,
-                                                               r.size.width,
-                                                               r.size.height)];
-    [addView addSubview:view];
-    height += r.size.height + r.origin.y;
+    CGRect r = view.frame;
+    r.origin.y = height + view.frame.origin.y;
+    height += view.frame.origin.y + view.frame.size.height;
+    view.frame = r;
+    [self addSubview:view];
     [self twViewSetHeight:height];
-    [self addSubview:addView];
 }
 
 -(void)sizeToFitLinear {
