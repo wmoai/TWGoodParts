@@ -5,35 +5,37 @@
 #import <objc/runtime.h>
 #import "UIView+TWLinear.h"
 
-static char *kTWViewKey;
+static char *key;
 @implementation UIView (TWLinear)
 
--(void)twViewSetHeight:(int)height {
-    objc_setAssociatedObject(self, &kTWViewKey, [NSNumber numberWithInt:height], OBJC_ASSOCIATION_RETAIN);
+-(void)setHeight:(int)height {
+    objc_setAssociatedObject(self, &key, [NSNumber numberWithInt:height], OBJC_ASSOCIATION_RETAIN);
 }
--(int)twViewHeight {
-    NSNumber *num = (NSNumber*)objc_getAssociatedObject(self, &kTWViewKey);
+-(int)height {
+    NSNumber *num = (NSNumber*)objc_getAssociatedObject(self, &key);
     if (!num) {
         return 0;
     }
     return [num intValue];
 }
 -(void)addSubviewLinear:(UIView *)view {
-    int height = [self twViewHeight];
     CGRect r = view.frame;
-    r.origin.y = height + view.frame.origin.y;
-    height += view.frame.origin.y + view.frame.size.height;
-    view.frame = r;
-    [self addSubview:view];
-    [self twViewSetHeight:height];
+    int height = [self height];
+    UIView *addView = [[UIView alloc] initWithFrame:CGRectMake(0,
+                                                               height,
+                                                               r.size.width,
+                                                               r.size.height)];
+    [addView addSubview:view];
+    height += r.size.height + r.origin.y;
+    [self setHeight:height];
+    [self addSubview:addView];
 }
 
 -(void)sizeToFitLinear {
-    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self twViewHeight])];
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self height])];
 }
 -(void)sizeToFitLinearWithPaddingBottom:(NSInteger)padding {
-    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self twViewHeight] + padding)];
+    [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, self.frame.size.width, [self height] + padding)];
 }
-
 
 @end
