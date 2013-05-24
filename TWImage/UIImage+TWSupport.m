@@ -1,9 +1,5 @@
 //
 //  UIImage+TWSupport.m
-//  Exstamp
-//
-//  Created by 東郷 晃典 on 13/05/24.
-//
 //
 
 #import "UIImage+TWSupport.h"
