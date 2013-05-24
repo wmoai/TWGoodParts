@@ -19,7 +19,7 @@
 
         // crop with center
         CGSize croppingSize = CGSizeMake(size.width * screenScale, size.height * screenScale);
-        CGPoint origin = CGPointMake((image.size.width - croppingSize.width) / 2, (image.size.height - croppingSize.height) / 2);
+        CGPoint origin = CGPointMake((image.size.width * scale - croppingSize.width) / 2, (image.size.height * scale - croppingSize.height) / 2);
 
         CIImage *croppedImage = [scaledCiImage imageByCroppingToRect:CGRectMake(origin.x, origin.y, croppingSize.width, croppingSize.height)];
 
