@@ -11,14 +11,12 @@
 {
     int _row;
     int _col;
-    int _lastDay;
+    int _numOfDays;
     float _calendarWidth;
     float _calendarHeight;
     float _gridWidth;
     float _gridHeight;
     CGPoint _calendarOrigin;
-    UIColor *_calendarColor;
-    UIColor *_selectorColor;
     UIView *_selecterView;
     UILabel *_calendarLabel;
     UIButton *_calendarPrevButton;
@@ -60,10 +58,10 @@
 
         NSRange range = [cal rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
 
-        _lastDay = range.length;
+        _numOfDays = range.length;
 
         // 切り上げ
-        _row = ceil((float)_lastDay / 4);
+        _row = ceil((float)_numOfDays / 4);
         _col = 4;
         _gridWidth = width / _col;
         _gridHeight = _gridWidth;
@@ -96,7 +94,7 @@
             index++;
             x = _calendarOrigin.x + _gridWidth * j;
 
-            if (index <= _lastDay) {
+            if (index <= _numOfDays) {
 
                 [delegate contentWithDay:index];
 
