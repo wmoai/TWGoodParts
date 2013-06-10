@@ -2,151 +2,141 @@
 //  TWCalendarView.m
 //
 #import "TWCalendarView.h"
-#import "UIColor+Support.h"
-#import "TWPinLabel.h"
-#import "UIImage+TWRemoteURL.h"
-#import "UIImage+TWSupport.h"
+#import "TWCalendarDaysView.h"
 
 @implementation TWCalendarView
 {
-    int _row;
-    int _col;
-    int _numOfDays;
-    float _calendarWidth;
-    float _calendarHeight;
-    float _gridWidth;
-    float _gridHeight;
-    CGPoint _calendarOrigin;
+    float _selecterViewHeight;
+    float _calendarButtonWidth;
+    int _calendarTerm;
     UIView *_selecterView;
     UILabel *_calendarLabel;
     UIButton *_calendarPrevButton;
     UIButton *_calendarNextButton;
+    TWInfinityScrollView *_scrollView;
+    TWCalendarDaysView *_latestCalendarView;
 }
 
-@synthesize delegate;
-
-- (id)initWithWidth:(CGFloat)width year:(NSUInteger)year month:(NSUInteger)month
+- (id)initWithWidth:(CGFloat)width
 {
     self = [super init];
     if (self) {
-        NSDateComponents *comps = [[NSDateComponents alloc] init];
-        [comps setYear:year];
-        [comps setMonth:month];
+        NSDateComponents *comps = [self dateComponents:[NSDate date]];
 
-        _selecterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, 50)];
-        _calendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(180 / 2, 0, width - 180, _selecterView.frame.size.height)];
-        _calendarLabel.text = [NSString stringWithFormat:@"%d / %d", year, month];
+        _calendarTerm = 5;
+        _selecterViewHeight = 50;
+        _calendarButtonWidth = 180;
+        _selecterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, _selecterViewHeight)];
+        _calendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(_calendarButtonWidth / 2, 0, width - _calendarButtonWidth, _selecterView.frame.size.height)];
+        _calendarLabel.text = [NSString stringWithFormat:@"%d / %d", [comps year], [comps month]];
         _calendarLabel.textAlignment = UITextAlignmentCenter;
         _calendarLabel.font = [UIFont boldSystemFontOfSize:23.0f];
-        _calendarLabel.textColor = [UIColor mainTextColor];
+        _calendarLabel.textColor = [UIColor darkGrayColor];
         _calendarLabel.backgroundColor = [UIColor clearColor];
         _calendarPrevButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_calendarPrevButton setImage:[UIImage imageNamed:@"arrow_left.png"] forState:UIControlStateNormal];
-        _calendarPrevButton.frame = CGRectMake(0, 0, 90, 50);
+        _calendarPrevButton.frame = CGRectMake(0, 0, _calendarButtonWidth / 2, _selecterViewHeight);
         _calendarPrevButton.backgroundColor = [UIColor clearColor];
         _calendarNextButton = [UIButton buttonWithType:UIButtonTypeCustom];
         [_calendarNextButton setImage:[UIImage imageNamed:@"arrow_right.png"] forState:UIControlStateNormal];
-        _calendarNextButton.frame = CGRectMake(_calendarLabel.frame.origin.x + _calendarLabel.frame.size.width, 0, 90, 50);
+        _calendarNextButton.frame = CGRectMake(_calendarLabel.frame.origin.x + _calendarLabel.frame.size.width, 0, _calendarButtonWidth / 2, _selecterViewHeight);
         _calendarNextButton.backgroundColor = [UIColor clearColor];
+
+        if ([self isThisMonth:comps]) {
+            [_calendarNextButton setEnabled:NO];
+        }
 
         [_selecterView addSubview:_calendarLabel];
         [_selecterView addSubview:_calendarPrevButton];
         [_selecterView addSubview:_calendarNextButton];
 
-        NSCalendar *cal = [NSCalendar currentCalendar];
-        NSDate *date = [cal dateFromComponents:comps];
+        _scrollView = [[TWInfinityScrollView alloc] initWithFrame:CGRectMake(0, _selecterViewHeight, width, 480)];
+        _scrollView.delegate = self;
 
-        NSRange range = [cal rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
+        // 2 months ago
+        float calendarDaysHeight;
+        for (int i = 0; i < _calendarTerm; i++) {
+            NSDate *date = [self dateFromCurrent:-2 + i];
+            NSRange range = [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
+            TWCalendarDaysView *calendarDaysView = [[TWCalendarDaysView alloc] initWithWidth:_scrollView.frame.size.width numOfDays:range.length];
+            calendarDaysView.backgroundColor = [UIColor whiteColor];
+            calendarDaysHeight = calendarDaysView.frame.size.height;
+            [_scrollView addPageView:calendarDaysView];
+        }
 
-        _numOfDays = range.length;
+        _scrollView.backgroundColor = [UIColor whiteColor];
+        _scrollView.frame = CGRectMake(_scrollView.frame.origin.x, _scrollView.frame.origin.y, _scrollView.frame.size.width, calendarDaysHeight);
 
-        // 切り上げ
-        _row = ceil((float)_numOfDays / 4);
-        _col = 4;
-        _gridWidth = width / _col;
-        _gridHeight = _gridWidth;
-        _calendarWidth = width;
-        _calendarHeight = _gridHeight * _row + _selecterView.frame.size.height;
-
-        _calendarOrigin = CGPointMake(0, _selecterView.frame.size.height);
-
-        [self addGridContents];
+        [self addSubview:_scrollView];
 
         self.backgroundColor = [UIColor whiteColor];
         _selecterView.backgroundColor = [UIColor whiteColor];
 
-        self.frame = CGRectMake(0, 0, _calendarWidth, _calendarHeight);
+        self.frame = CGRectMake(0, 0, width, _selecterViewHeight + _scrollView.frame.size.height);
 
         [self addSubview:_selecterView];
     }
     return self;
 }
 
-- (void)addGridContents
+- (void)setDelegate:(id)delegate
 {
-    float y = 0;
-    float x = 0;
-    int index = 0;
-
-    for (int i = 0; i < _row; i++) {
-        y = _calendarOrigin.y + (_gridHeight * i);
-        for (int j = 0; j < _col; j++) {
-            index++;
-            x = _calendarOrigin.x + _gridWidth * j;
-
-            if (index <= _numOfDays) {
-
-                [delegate contentWithDay:index];
-
-                UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(x + 5, y + 5, _gridWidth - 10, _gridHeight - 10)];
-                imageView.contentMode = UIViewContentModeCenter;
-                imageView.backgroundColor = [UIColor imageBackgroundColor];
-                imageView.layer.borderWidth = 2.0f;
-                imageView.layer.borderColor = [UIColor imageBorderColor].CGColor;
-                imageView.layer.masksToBounds = NO;
-                imageView.layer.shadowOffset = CGSizeMake(2, 2);
-                imageView.layer.shadowOpacity = 0.5;
-
-                [UIImage imageWithURL:[NSURL URLWithString:@"https://s3-ap-northeast-1.amazonaws.com/exstamp-dev/uploads/experience/image/2/size_200_dokupe.jpg"]
-                             cacheTag:@"experiences"
-                           completion:^(NSURLRequest *request, NSHTTPURLResponse *response, UIImage *image) {
-                               [UIImage scaleAspectFillWithCenterCropping:image size:imageView.frame.size completion:^(UIImage *image) {
-                                   [imageView setImage:image];
-                               }];
-                           }];
-
-                [self addSubview:imageView];
-
-                TWPinLabel *label = [[TWPinLabel alloc] initWithFrame:CGRectMake(x, y, 20, 20)];
-                label.text = [NSString stringWithFormat:@"%d", index];
-                label.textColor = [UIColor whiteColor];
-                label.font = [UIFont fontWithName:@"Baskerville-SemiBoldItalic" size:11.0f];
-                [self addSubview:label];
-            }
-        }
+    for (TWCalendarDaysView *view in _scrollView.pageViews) {
+        view.delegate = delegate;
     }
 }
 
-- (void)drawRect:(CGRect)rect
+- (BOOL)isThisMonth:(NSDateComponents *)comps
 {
-    [super drawRect:rect];
-
-    CGContextRef ctx = UIGraphicsGetCurrentContext();
-
-    CGContextSetRGBStrokeColor(ctx, 0.75, 0.75, 0.75, 1.0f);
-
-    for (int i = 0; i < _row + 1; i++) {
-        float y = _calendarOrigin.y + (_gridHeight * i);
-        CGContextMoveToPoint(ctx, _calendarOrigin.x, y);
-        CGContextAddLineToPoint(ctx, _calendarOrigin.x + _calendarWidth, y);
+    NSDateComponents *nowComps = [self dateComponents:[NSDate date]];
+    if ([nowComps year] == [comps year] && [nowComps month] == [comps month]) {
+        return YES;
     }
-    for (int j = 0; j < _col + 1; j++) {
-        float x = _calendarOrigin.x + _gridWidth * j;
-        CGContextMoveToPoint(ctx, x, _calendarOrigin.y);
-        CGContextAddLineToPoint(ctx, x, _calendarOrigin.y + _calendarHeight);
-    }
+    return NO;
+}
 
-    CGContextStrokePath(ctx);
+- (void)render
+{
+    if (_latestCalendarView) {
+        [_latestCalendarView removeGridContents];
+    }
+    NSUInteger visibleIndex = ceil((float)_calendarTerm / 2) - 1;
+    _latestCalendarView = (TWCalendarDaysView *)[_scrollView.pageViews objectAtIndex:visibleIndex];
+    [_latestCalendarView addGridContents];
+}
+
+- (void)pageDidScrolled:(int)currentPageIndex
+{
+    NSDate *date = [self dateFromCurrent:currentPageIndex];
+    NSDateComponents *currentPageComps = [self dateComponents:date];
+    _calendarLabel.text = [NSString stringWithFormat:@"%d / %d", [currentPageComps year], [currentPageComps month]];
+    [self render];
+}
+
+- (void)movePageView:(UIView *)view pageIndex:(int)pageIndex
+{
+    TWCalendarDaysView *calendarDaysView = (TWCalendarDaysView *)view;
+    NSDate *date = [self dateFromCurrent:pageIndex];
+    NSRange range = [self currentRangeFromDate:date];
+    [calendarDaysView setNumOfDays:range.length];
+    [calendarDaysView reload];
+}
+
+- (NSDate *)dateFromCurrent:(int)passedMonth
+{
+    NSDateComponents *comps = [[NSDateComponents alloc] init];
+    [comps setMonth:passedMonth];
+    return [[NSCalendar currentCalendar] dateByAddingComponents:comps toDate:[NSDate date] options:0];
+}
+
+- (NSDateComponents *)dateComponents:(NSDate *)date
+{
+    return [[NSCalendar currentCalendar] components:NSMonthCalendarUnit | NSYearCalendarUnit fromDate:date];
+}
+
+- (NSRange)currentRangeFromDate:(NSDate *)date
+{
+    return [[NSCalendar currentCalendar] rangeOfUnit:NSDayCalendarUnit inUnit:NSMonthCalendarUnit forDate:date];
 }
 
 @end

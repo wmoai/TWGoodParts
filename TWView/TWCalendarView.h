@@ -4,21 +4,21 @@
 
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
+#import "TWInfinityScrollView.h"
 
 @protocol TWCalendarViewDelegate <NSObject>
 
-- (void)contentWithDay:(NSInteger)day;
+- (UIView *)contentWithDay:(NSInteger)day gridRect:(CGRect)gridRect;
+- (void)prevCalendarButtonDidPush:(id)sender;
+- (void)nextCalendarButtonDidPush:(id)sender;
 
 @end
 
-@interface TWCalendarView : UIView
-{
-    __weak id<TWCalendarViewDelegate> _delegate;
-}
+@interface TWCalendarView : UIView <TWInfinityScrollViewDelegate>
 
-@property (nonatomic, weak) id<TWCalendarViewDelegate> delegate;
-
-- (id)initWithWidth:(CGFloat)width year:(NSUInteger)year month:(NSUInteger)month;
+- (id)initWithWidth:(CGFloat)width;
+- (void)setDelegate:(id)delegate;
+- (void)render;
 
 @end
 

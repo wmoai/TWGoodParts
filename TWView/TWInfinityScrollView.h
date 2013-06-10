@@ -11,7 +11,20 @@ enum {
 };
 typedef NSUInteger TWInfinityScrollDirection;
 
+@protocol TWInfinityScrollViewDelegate <NSObject>
+
+- (void)movePageView:(UIView *)view pageIndex:(int)pageIndex;
+- (void)pageDidScrolled:(int)currentPageIndex;
+
+@end
+
 @interface TWInfinityScrollView : UIView <UIScrollViewDelegate>
+{
+    __weak id<TWInfinityScrollViewDelegate> _delegate;
+}
+
+@property (nonatomic, weak) id<TWInfinityScrollViewDelegate> delegate;
+@property (nonatomic, strong) NSMutableArray *pageViews;
 
 - (void)addPageView:(UIView *)view;
 

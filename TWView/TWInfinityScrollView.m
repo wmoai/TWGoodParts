@@ -9,29 +9,39 @@
     NSMutableArray *_pageViews;
     UIScrollView *_innerScrollView;
     CGFloat _currentOriginX;
+    int _currentPageIndex;
 }
+
+@synthesize delegate = _delegate;
+@synthesize pageViews = _pageViews;
 
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
         _pageViews = [NSMutableArray array];
-        _innerScrollView = [[UIScrollView alloc] initWithFrame:frame];
+        _innerScrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
         _innerScrollView.pagingEnabled = YES;
         _innerScrollView.delegate = self;
         _innerScrollView.bounces = NO;
+        _currentPageIndex = 0;
 
         [self addSubview:_innerScrollView];
     }
     return self;
 }
 
+- (void)setFrame:(CGRect)frame
+{
+    [super setFrame:frame];
+    _innerScrollView.frame = CGRectMake(0, 0, frame.size.width, frame.size.height);
+}
+
 - (void)addPageView:(UIView *)view
 {
     [_pageViews addObject:view];
-    view.backgroundColor = [UIColor greenColor];
     [_innerScrollView addSubview:view];
-    _innerScrollView.contentSize = CGSizeMake(_pageViews.count * self.frame.size.width, self.frame.size.height);
+    _innerScrollView.contentSize = CGSizeMake(_pageViews.count * self.frame.size.width, view.frame.size.height);
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
@@ -47,9 +57,11 @@
         direction = kTWInfinityScrollDirectionNon;
     }
 
-    NSLog(@"pageIndex %d", pageIndex);
-
-    [self replacePageView:direction pageIndex:pageIndex];
+    if (direction != kTWInfinityScrollDirectionNon) {
+        [self replacePageView:direction pageIndex:pageIndex];
+        _currentPageIndex += pageIndex;
+        [_delegate pageDidScrolled:_currentPageIndex];
+    }
 }
 
 - (void)replacePageView:(TWInfinityScrollDirection)direction pageIndex:(int)pageIndex
@@ -57,24 +69,33 @@
     UIView *replaceView;
     switch (direction) {
         case kTWInfinityScrollDirectionRight:
+        {
+            int leftEndIndex = _currentPageIndex - (_pageViews.count / 2);
             for (int i = 0; i < abs(pageIndex); i++) {
                 replaceView = [_pageViews lastObject];
                 [_pageViews removeLastObject];
                 [_pageViews insertObject:replaceView atIndex:0];
+                [_delegate movePageView:replaceView pageIndex:leftEndIndex - (i + 1)];
             }
-            [self layoutSubviews];
+        }
             break;
         case kTWInfinityScrollDirectionLeft:
+        {
+            int rightEndIndex = _currentPageIndex + (_pageViews.count / 2);
             for (int i = 0; i < abs(pageIndex); i++) {
                 replaceView = [_pageViews objectAtIndex:0];
                 [_pageViews removeObjectAtIndex:0];
                 [_pageViews insertObject:replaceView atIndex:_pageViews.count];
+                [_delegate movePageView:replaceView pageIndex:rightEndIndex + (i + 1)];
             }
-            [self layoutSubviews];
+        }
             break;
         default:
+            return;
             break;
     }
+
+    [self layoutSubviews];
 }
 
 - (void)layoutSubviews
