@@ -17,18 +17,17 @@
     TWCalendarDaysView *_latestCalendarView;
 }
 
+@synthesize delegate = _delegate;
+
 - (id)initWithWidth:(CGFloat)width
 {
     self = [super init];
     if (self) {
-        NSDateComponents *comps = [self dateComponents:[NSDate date]];
-
         _calendarTerm = 5;
         _selecterViewHeight = 50;
         _calendarButtonWidth = 180;
         _selecterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, width, _selecterViewHeight)];
         _calendarLabel = [[UILabel alloc] initWithFrame:CGRectMake(_calendarButtonWidth / 2, 0, width - _calendarButtonWidth, _selecterView.frame.size.height)];
-        _calendarLabel.text = [NSString stringWithFormat:@"%d / %d", [comps year], [comps month]];
         _calendarLabel.textAlignment = UITextAlignmentCenter;
         _calendarLabel.font = [UIFont boldSystemFontOfSize:23.0f];
         _calendarLabel.textColor = [UIColor darkGrayColor];
@@ -41,10 +40,6 @@
         [_calendarNextButton setImage:[UIImage imageNamed:@"arrow_right.png"] forState:UIControlStateNormal];
         _calendarNextButton.frame = CGRectMake(_calendarLabel.frame.origin.x + _calendarLabel.frame.size.width, 0, _calendarButtonWidth / 2, _selecterViewHeight);
         _calendarNextButton.backgroundColor = [UIColor clearColor];
-
-        if ([self isThisMonth:comps]) {
-            [_calendarNextButton setEnabled:NO];
-        }
 
         [_selecterView addSubview:_calendarLabel];
         [_selecterView addSubview:_calendarPrevButton];
@@ -79,8 +74,9 @@
     return self;
 }
 
-- (void)setDelegate:(id)delegate
+- (void)setDelegate:(id<TWCalendarViewDelegate>)delegate
 {
+    _delegate = delegate;
     for (TWCalendarDaysView *view in _scrollView.pageViews) {
         view.delegate = delegate;
     }
@@ -97,12 +93,7 @@
 
 - (void)render
 {
-    if (_latestCalendarView) {
-        [_latestCalendarView removeGridContents];
-    }
-    NSUInteger visibleIndex = ceil((float)_calendarTerm / 2) - 1;
-    _latestCalendarView = (TWCalendarDaysView *)[_scrollView.pageViews objectAtIndex:visibleIndex];
-    [_latestCalendarView addGridContents];
+    [self pageDidScrolled:0];
 }
 
 - (void)pageDidScrolled:(int)currentPageIndex
@@ -110,6 +101,17 @@
     NSDate *date = [self dateFromCurrent:currentPageIndex];
     NSDateComponents *currentPageComps = [self dateComponents:date];
     _calendarLabel.text = [NSString stringWithFormat:@"%d / %d", [currentPageComps year], [currentPageComps month]];
+    if ([self isThisMonth:currentPageComps]) {
+        [_calendarNextButton setEnabled:NO];
+    }
+
+    if (_latestCalendarView) {
+        [_latestCalendarView removeGridContents];
+    }
+    NSUInteger visibleIndex = ceil((float)_calendarTerm / 2) - 1;
+    _latestCalendarView = (TWCalendarDaysView *)[_scrollView.pageViews objectAtIndex:visibleIndex];
+    [_delegate calendarDidChange:date];
+    [_latestCalendarView addGridContents];
     [self render];
 }
 
