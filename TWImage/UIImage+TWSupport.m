@@ -14,12 +14,12 @@
         CGFloat screenScale = [UIScreen mainScreen].scale;
 
         // resize with fill
-        CGFloat scale = image.size.width < image.size.height ? size.width * screenScale / image.size.width : size.height * screenScale / image.size.height;
+        CGFloat scale = image.size.width < image.size.height ? (size.width * screenScale) / (image.size.width * image.scale) : (size.height * screenScale) / (image.size.height * image.scale);
         CIImage *scaledCiImage = [ciImage imageByApplyingTransform:CGAffineTransformMakeScale(scale, scale)];
 
         // crop with center
         CGSize croppingSize = CGSizeMake(size.width * screenScale, size.height * screenScale);
-        CGPoint origin = CGPointMake((image.size.width * scale - croppingSize.width) / 2, (image.size.height * scale - croppingSize.height) / 2);
+        CGPoint origin = CGPointMake((image.size.width * image.scale * scale - croppingSize.width) / 2, (image.size.height * image.scale * scale - croppingSize.height) / 2);
 
         CIImage *croppedImage = [scaledCiImage imageByCroppingToRect:CGRectMake(origin.x, origin.y, croppingSize.width, croppingSize.height)];
 
