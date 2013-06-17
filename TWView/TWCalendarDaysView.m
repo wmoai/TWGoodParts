@@ -10,7 +10,8 @@
     int _row;
     int _col;
     int _maxRow;
-    int _numOfDays;
+    NSUInteger _month;
+    NSUInteger _numOfDays;
     int _maxNumOfDays;
     float _gridWidth;
     float _gridHeight;
@@ -20,11 +21,11 @@
 
 @synthesize delegate = _delegate;
 
-- (id)initWithWidth:(CGFloat)width numOfDays:(NSUInteger)numOfDays
+- (id)initWithWidth:(CGFloat)width numOfDays:(NSUInteger)numOfDays month:(NSUInteger)month
 {
     self = [super init];
     if (self) {
-        [self setNumOfDays:numOfDays];
+        [self setNumOfDays:numOfDays month:month];
         _maxNumOfDays = 31;
         _dayLabels = [NSMutableArray arrayWithCapacity:_maxNumOfDays];
         _gridContentTags = [NSMutableArray arrayWithCapacity:_maxNumOfDays];
@@ -40,10 +41,11 @@
     return self;
 }
 
-- (void)setNumOfDays:(int)numOfDays
+- (void)setNumOfDays:(NSUInteger)numOfDays month:(NSUInteger)month
 {
     _numOfDays = numOfDays;
     _row = ceil((float)_numOfDays / 4);
+    _month = month;
 }
 
 - (void)addDayLabel
@@ -101,7 +103,7 @@
             x = _gridWidth * j;
 
             if (index <= _numOfDays) {
-                UIView *view = [_delegate contentWithDay:index gridRect:CGRectMake(x, y, _gridWidth, _gridHeight)];
+                UIView *view = [_delegate contentWithDay:index month:_month gridRect:CGRectMake(x, y, _gridWidth, _gridHeight)];
 
                 if (view) {
                     view.tag = index;

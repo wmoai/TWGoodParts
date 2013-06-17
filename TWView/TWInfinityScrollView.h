@@ -27,5 +27,7 @@ typedef NSUInteger TWInfinityScrollDirection;
 @property (nonatomic, strong) NSMutableArray *pageViews;
 
 - (void)addPageView:(UIView *)view;
+- (void)prevPageScrolle:(BOOL)animated;
+- (void)nextPageScrolle:(BOOL)animated;
 
 @end

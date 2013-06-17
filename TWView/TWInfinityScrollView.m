@@ -44,6 +44,11 @@
     _innerScrollView.contentSize = CGSizeMake(_pageViews.count * self.frame.size.width, view.frame.size.height);
 }
 
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView
+{
+    [self scrollViewDidEndDecelerating:scrollView];
+}
+
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     TWInfinityScrollDirection direction;
@@ -96,6 +101,18 @@
     }
 
     [self layoutSubviews];
+}
+
+- (void)nextPageScrolle:(BOOL)animated
+{
+    CGPoint origin = _innerScrollView.contentOffset;
+    [_innerScrollView setContentOffset:CGPointMake(origin.x + _innerScrollView.frame.size.width, origin.y) animated:YES];
+}
+
+- (void)prevPageScrolle:(BOOL)animated
+{
+    CGPoint origin = _innerScrollView.contentOffset;
+    [_innerScrollView setContentOffset:CGPointMake(origin.x - _innerScrollView.frame.size.width, origin.y) animated:YES];
 }
 
 - (void)layoutSubviews

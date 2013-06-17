@@ -8,9 +8,7 @@
 
 @protocol TWCalendarViewDelegate <NSObject>
 
-- (UIView *)contentWithDay:(NSInteger)day gridRect:(CGRect)gridRect;
-- (void)prevCalendarButtonDidPush:(id)sender;
-- (void)nextCalendarButtonDidPush:(id)sender;
+- (UIView *)contentWithDay:(NSInteger)day month:(NSUInteger)month gridRect:(CGRect)gridRect;
 - (void)calendarDidChange:(NSDate *)date;
 
 @end
@@ -24,7 +22,7 @@
 
 - (id)initWithWidth:(CGFloat)width;
 - (void)setDelegate:(id <TWCalendarViewDelegate>)delegate;
-- (void)render;
+- (void)contentsLoad;
 
 @end
 

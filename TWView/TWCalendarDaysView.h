@@ -13,8 +13,8 @@
 
 @property (nonatomic, weak) id<TWCalendarViewDelegate> delegate;
 
-- (id)initWithWidth:(CGFloat)width numOfDays:(NSUInteger)numOfDays;
-- (void)setNumOfDays:(int)numOfDays;
+- (id)initWithWidth:(CGFloat)width numOfDays:(NSUInteger)numOfDays month:(NSUInteger)month;
+- (void)setNumOfDays:(NSUInteger)numOfDays month:(NSUInteger)month;
 - (void)reload;
 - (void)addGridContents;
 - (void)removeGridContents;
