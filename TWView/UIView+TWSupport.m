@@ -93,4 +93,33 @@ static char *kTWViewKey;
     [self setHeight:self.frame.size.height + height];
 }
 
+- (void)drawLinearGradient:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor vertical:(BOOL)vertical
+{
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGFloat locations[] = { 0.0, 1.0 };
+
+    NSArray *colors = @[(__bridge id) startColor, (__bridge id) endColor];
+
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace, (__bridge CFArrayRef) colors, locations);
+
+    CGPoint startPoint;
+    CGPoint endPoint;
+    if (vertical) {
+        startPoint = CGPointMake(CGRectGetMinX(rect), CGRectGetMidY(rect));
+        endPoint = CGPointMake(CGRectGetMaxX(rect), CGRectGetMidY(rect));
+    } else {
+        startPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMinY(rect));
+        endPoint = CGPointMake(CGRectGetMidX(rect), CGRectGetMaxY(rect));
+    }
+
+    CGContextSaveGState(context);
+    CGContextAddRect(context, rect);
+    CGContextClip(context);
+    CGContextDrawLinearGradient(context, gradient, startPoint, endPoint, 0);
+    CGContextRestoreGState(context);
+
+    CGGradientRelease(gradient);
+    CGColorSpaceRelease(colorSpace);
+}
+
 @end

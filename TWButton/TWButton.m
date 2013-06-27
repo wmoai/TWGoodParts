@@ -3,12 +3,14 @@
 //
 
 #import "TWButton.h"
+#import "UIView+TWSupport.h"
 
 @implementation TWButton
 {
     CAGradientLayer *_gradientLayer;
     CALayer *_highlightLayer;
     CGSize _maxSize;
+    CGFloat _gradientBorderWidth[4];
 }
 
 + (id)buttonWithGradient:(CGRect)frame
@@ -44,7 +46,17 @@
     return button;
 }
 
-- (void)setOptionsWithCornerRadius:(CGRect)frame
++ (id)buttonWithColor:(CGRect)frame color:(UIColor *)color cornerRadius:(CGFloat)cornerRadius
+{
+    TWButton *button = [self buttonWithType:UIButtonTypeCustom];
+    button.backgroundColor = color;
+    [button setCornerRadius:cornerRadius];
+    [button setOptions:frame];
+
+    return button;
+}
+
+- (void)setOptions:(CGRect)frame
 {
     self.frame = frame;
     if (!_highlightLayer) {
@@ -57,6 +69,11 @@
         [self.layer addSublayer:_highlightLayer];
     }
     [self setHighlightColorBlack];
+}
+
+- (void)setOptionsWithCornerRadius:(CGRect)frame
+{
+    [self setOptions:frame];
     [self setCornerRadius];
 }
 
@@ -164,6 +181,60 @@
                                         constrainedToSize:constrainedToSize
                                             lineBreakMode:UILineBreakModeTailTruncation];
     [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, sizeToFit.width, self.frame.size.height)];
+}
+
+- (void)setGradientBorder:(CGFloat)top left:(CGFloat)left bottom:(CGFloat)bottom right:(CGFloat)right
+{
+    _gradientBorderWidth[0] = top;
+    _gradientBorderWidth[1] = left;
+    _gradientBorderWidth[2] = bottom;
+    _gradientBorderWidth[3] = right;
+}
+
+- (void)drawRect:(CGRect)rect
+{
+    [super drawRect:rect];
+
+    CGContextRef context = UIGraphicsGetCurrentContext();
+
+    UIColor * whiteColor = [UIColor colorWithWhite:0.2f alpha:0.5f];
+    UIColor * lightGrayColor = [UIColor colorWithWhite:0.1f alpha:0.5f];
+    if (_gradientBorderWidth[0] > 0.0f) {
+        CGSize topSize;
+//        if (_gradientBorderWidth[1] > 0.0f) {
+//            topSize = CGSizeMake(self.frame.size.width - _gradientBorderWidth[1], _gradientBorderWidth[0]);
+//        } else {
+            topSize = CGSizeMake(self.frame.size.width, _gradientBorderWidth[0]);
+//        }
+        [self drawLinearGradient:context rect:CGRectMake(0, 0, topSize.width, topSize.height) startColor:lightGrayColor.CGColor endColor:whiteColor.CGColor vertical:NO];
+    }
+    if (_gradientBorderWidth[1] > 0.0f) {
+        CGSize leftSize;
+//        if (_gradientBorderWidth[2] > 0.0f) {
+//            leftSize = CGSizeMake(_gradientBorderWidth[1], self.frame.size.height - _gradientBorderWidth[2]);
+//        } else {
+            leftSize = CGSizeMake(_gradientBorderWidth[1], self.frame.size.height);
+//        }
+        [self drawLinearGradient:context rect:CGRectMake(self.frame.size.width - _gradientBorderWidth[1], 0, leftSize.width, leftSize.height) startColor:lightGrayColor.CGColor endColor:whiteColor.CGColor vertical:YES];
+    }
+    if (_gradientBorderWidth[2] > 0.0f) {
+        CGSize bottomSize;
+//        if (_gradientBorderWidth[3] > 0.0f) {
+//            bottomSize = CGSizeMake(self.frame.size.width - _gradientBorderWidth[3], _gradientBorderWidth[2]);
+//        } else {
+            bottomSize = CGSizeMake(self.frame.size.width, _gradientBorderWidth[2]);
+//        }
+        [self drawLinearGradient:context rect:CGRectMake(0, self.frame.size.height - _gradientBorderWidth[2], bottomSize.width, bottomSize.height) startColor:lightGrayColor.CGColor endColor:whiteColor.CGColor vertical:NO];
+    }
+    if (_gradientBorderWidth[3] > 0.0f) {
+        CGSize rightSize;
+//        if (_gradientBorderWidth[0] > 0.0f) {
+//            rightSize = CGSizeMake(_gradientBorderWidth[3], self.frame.size.height - _gradientBorderWidth[0]);
+//        } else {
+            rightSize = CGSizeMake(_gradientBorderWidth[3], self.frame.size.height);
+//        }
+        [self drawLinearGradient:context rect:CGRectMake(0, 0, rightSize.width, rightSize.height) startColor:lightGrayColor.CGColor endColor:whiteColor.CGColor vertical:YES];
+    }
 }
 
 @end

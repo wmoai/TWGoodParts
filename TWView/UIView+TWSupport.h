@@ -20,5 +20,6 @@
 - (void)setSize:(CGSize)size;
 - (void)setPoint:(CGPoint)point;
 - (void)addHeight:(CGFloat)height;
+- (void)drawLinearGradient:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor vertical:(BOOL)vertical;
 
 @end
