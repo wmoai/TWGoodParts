@@ -8,6 +8,8 @@
 
 - (void)twDateTimeDidChanged:(UIDatePicker *)datePicker dateString:(NSString *)dateString;
 - (void)twDateTimeDidCompleted:(UIDatePicker *)datePicker dateString:(NSString *)dateString;
+- (void)twDateTimeDidShow;
+- (void)twDateTimeDidHide;
 
 @end
 
@@ -17,5 +19,9 @@
 
 - (void)show;
 - (void)hide;
+- (void)setDate:(NSDate *)date;
+- (void)setDateFormatter:(NSString *)format;
+- (void)setMaximumDate:(NSDate *)date;
+- (void)setMinimumDate:(NSDate *)date;
 
 @end

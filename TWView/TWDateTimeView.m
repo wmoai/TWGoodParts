@@ -71,6 +71,11 @@
     _dateTimePicker.minimumDate = date;
 }
 
+- (void)setDate:(NSDate *)date
+{
+    _dateTimePicker.date = date;
+}
+
 - (void)setDateControllView
 {
     [_backButton removeTarget:self action:@selector(backButtonDidPush:) forControlEvents:UIControlEventTouchUpInside];
@@ -125,6 +130,7 @@
     [UIView animateWithDuration:0.3f
                      animations:^{
                          self.frame = rect;
+                         [_deleagte twDateTimeDidShow];
                      }];
     [self setDateControllView];
 }
@@ -134,6 +140,7 @@
     [UIView animateWithDuration:0.3f
                      animations:^{
                          [self layoutSubviews];
+                         [_deleagte twDateTimeDidHide];
                      } completion:^(BOOL finished) {
                          self.hidden = YES;
                          [self setDateControllView];
