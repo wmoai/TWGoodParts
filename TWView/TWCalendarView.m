@@ -33,12 +33,12 @@
         _calendarLabel.textColor = [UIColor whiteColor];
         _calendarLabel.backgroundColor = [UIColor clearColor];
         _calendarPrevButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_calendarPrevButton setImage:[UIImage imageNamed:@"arrow_left.png"] forState:UIControlStateNormal];
+        [_calendarPrevButton setImage:[UIImage imageNamed:@"tw_arrow_left.png"] forState:UIControlStateNormal];
         _calendarPrevButton.frame = CGRectMake(0, 0, _calendarButtonWidth / 2, _selecterViewHeight);
         _calendarPrevButton.backgroundColor = [UIColor clearColor];
         [_calendarPrevButton addTarget:self action:@selector(prevCalendarButtonDidPush:) forControlEvents:UIControlEventTouchUpInside];
         _calendarNextButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_calendarNextButton setImage:[UIImage imageNamed:@"arrow_right.png"] forState:UIControlStateNormal];
+        [_calendarNextButton setImage:[UIImage imageNamed:@"tw_arrow_right.png"] forState:UIControlStateNormal];
         _calendarNextButton.frame = CGRectMake(_calendarLabel.frame.origin.x + _calendarLabel.frame.size.width, 0, _calendarButtonWidth / 2, _selecterViewHeight);
         _calendarNextButton.backgroundColor = [UIColor clearColor];
         [_calendarNextButton addTarget:self action:@selector(nextCalendarButtonDidPush:) forControlEvents:UIControlEventTouchUpInside];
@@ -86,9 +86,14 @@
     }
 }
 
-- (void)setCalendarLableBackgroundColor:(UIColor *)color
+- (void)setCalendarLabelBackgroundColor:(UIColor *)color
 {
     _calendarLabel.backgroundColor = color;
+}
+
+- (void)setCalendarLabelTextColor:(UIColor *)color
+{
+    _calendarLabel.textColor = color;
 }
 
 - (void)setCalendarBackgroundColor:(UIColor *)color
@@ -97,6 +102,36 @@
     for (TWCalendarDaysView *view in _scrollView.pageViews) {
         view.backgroundColor = color;
     }
+}
+
+- (void)setCalendarNextButtonTitleColor:(UIColor *)color
+{
+    _calendarNextButton.titleLabel.textColor = color;
+}
+
+- (void)setCalendarNextButtonBackgroundColor:(UIColor *)color
+{
+    _calendarNextButton.backgroundColor = color;
+}
+
+- (void)setCalendarPrevButtonTitleColor:(UIColor *)color
+{
+    _calendarPrevButton.titleLabel.textColor = color;
+}
+
+- (void)setCalendarPrevButtonBackgroundColor:(UIColor *)color
+{
+    _calendarPrevButton.backgroundColor = color;
+}
+
+- (void)setCalendarPrevButtonImage:(NSString *)image
+{
+    [_calendarPrevButton setImage:[UIImage imageNamed:image] forState:UIControlStateNormal];
+}
+
+- (void)setCalendarNextButtonImage:(NSString *)image
+{
+    [_calendarNextButton setImage:[UIImage imageNamed:image] forState:UIControlStateNormal];
 }
 
 - (BOOL)isThisMonth:(NSDateComponents *)comps
