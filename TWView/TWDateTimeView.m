@@ -31,11 +31,11 @@
         
         _controllView.backgroundColor = [UIColor colorWithWhite:0.3f alpha:0.9f];
         
-        _backButton = [TWButton buttonWithGradient:CGRectMake(5, 5, 55, 35)
+        _backButton = [TWButton buttonWithGradient:CGRectMake(5, 5, 75, 35)
                                           topColor:[UIColor colorWithWhite:0.1f alpha:1.0f]
                                        bottomColor:[UIColor colorWithWhite:0.3f alpha:1.0f]];
         _backButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-        _nextButton = [TWButton buttonWithGradient:CGRectMake(frame.size.width - 55 - 5, 5, 55, 35)
+        _nextButton = [TWButton buttonWithGradient:CGRectMake(frame.size.width - 75 - 5, 5, 75, 35)
                                           topColor:[UIColor colorWithWhite:0.1f alpha:1.0f]
                                        bottomColor:[UIColor colorWithWhite:0.3f alpha:1.0f]];
         _nextButton.titleLabel.font = [UIFont systemFontOfSize:13.0f];
