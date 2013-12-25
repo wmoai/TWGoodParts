@@ -23,6 +23,13 @@
 - (id)initWithWidth:(CGFloat)width;
 - (void)setDelegate:(id <TWCalendarViewDelegate>)delegate;
 - (void)contentsLoad;
-
+- (void)setCalendarLabelBackgroundColor:(UIColor *)color;
+- (void)setCalendarLabelTextColor:(UIColor *)color;
+- (void)setCalendarNextButtonTitleColor:(UIColor *)color;
+- (void)setCalendarNextButtonBackgroundColor:(UIColor *)color;
+- (void)setCalendarNextButtonImage:(NSString *)image;
+- (void)setCalendarPrevButtonTitleColor:(UIColor *)color;
+- (void)setCalendarPrevButtonBackgroundColor:(UIColor *)color;
+- (void)setCalendarPrevButtonImage:(NSString *)image;
 @end
 
